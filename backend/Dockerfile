@@ -8,7 +8,7 @@ FROM node:14-alpine3.12
 WORKDIR /usr/src/app/backend
 
 # Copy package.json and package-lock.json (if available)
-COPY package*.json ./
+COPY backend/package*.json ./
 
 # Install dependencies
 RUN npm install
