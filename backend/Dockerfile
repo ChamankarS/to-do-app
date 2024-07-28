@@ -1,22 +1,24 @@
-FROM node:14-alpine3.12
-COPY . .
-EXPOSE 4000
-CMD ["node","index.js"]
+# FROM node:14-alpine3.12
+# COPY . .
+# EXPOSE 4000
+# CMD ["node","index.js"]
 # FROM node:14-alpine3.12
 
-# # Create app directory
-# WORKDIR /app
+# Set the working directory
+WORKDIR /usr/src/app
 
-# # Install app dependencies
-# COPY package*.json .
-# RUN npm install
+# Copy package.json and package-lock.json (if available)
+COPY package*.json ./
 
-# # Bundle app source
-# COPY . .
+# Install dependencies
+RUN npm install
 
-# # Expose the port the app runs on
-# EXPOSE 4000
+# Copy the rest of the application code
+COPY . .
 
-# # Command to run the app
-# CMD ["node", "index.js"]
+# Expose the application port
+EXPOSE 4000
+
+# Command to run the application
+CMD ["node", "index.js"]
 
