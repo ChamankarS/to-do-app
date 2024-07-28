@@ -2,7 +2,7 @@
 # COPY . .
 # EXPOSE 4000
 # CMD ["node","index.js"]
-# FROM node:14-alpine3.12
+FROM node:14-alpine3.12
 
 # Set the working directory
 WORKDIR /usr/src/app
