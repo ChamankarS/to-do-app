@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('git-checkout') {
             steps {
-                git branch: 'main', changelog: false, poll: false, url: 'https://github.com/jaiswaladi246/to-do-app.git'
+                git branch: 'main', url: 'https://github.com/ChamankarS/to-do-app.git'            }
             }
         }
 
@@ -20,44 +20,36 @@ pipeline {
                }
             }
            
-		stage('OWASP Dependency Check') {
+     stage('OWASP Dependency Check') {
             steps {
                dependencyCheck additionalArguments: '--scan ./', odcInstallation: 'DP'
                     dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-            }
-        }
-     
-
-         stage('Docker Build') {
-            steps {
-               script{
-                   withDockerRegistry(credentialsId: '9ea0c4b0-721f-4219-be62-48a976dbeec0') {
-                    sh "docker build -t  todoapp:latest -f docker/Dockerfile . "
-                    sh "docker tag todoapp:latest username/todoapp:latest "
-                 }
                }
+           }
+     stage('Docker Build & Push') {
+            steps {
+                script{
+                    withDockerRegistry(credentialsId: '3565399f-2316-40d6-8070-3c02881066c1', toolName: 'docker') {
+                        sh "docker build -t todoapp:latest -f backend/Dockerfile . "
+                        sh "docker tag todoapp:latest chamankarsahil/todoapp:latest "
+                        sh "docker push chamankarsahil/todoapp:latest "
+                    }
+                }
             }
         }
 
-        stage('Docker Push') {
-            steps {
-               script{
-                   withDockerRegistry(credentialsId: '9ea0c4b0-721f-4219-be62-48a976dbeec0') {
-                    sh "docker push  username/todoapp:latest "
-                 }
-               }
-            }
-        }
-        stage('trivy') {
+          
+             
+      stage('trivy') {
             steps {
                sh " trivy username/todoapp:latest"
             }
         }
-		stage('Deploy to Docker') {
+        stage('Deploy to Docker') {
             steps {
                script{
-                   withDockerRegistry(credentialsId: '9ea0c4b0-721f-4219-be62-48a976dbeec0') {
-                    sh "docker run -d --name to-do-app -p 4000:4000 username/todoapp:latest "
+                    withDockerRegistry(credentialsId: '3565399f-2316-40d6-8070-3c02881066c1', toolName: 'docker') {
+                    sh "docker run -d --name to-do-app -p 4000:4000 chamankarsahil/todoapp:latest "
                  }
                }
             }
